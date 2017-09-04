@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 
 N = 100
-n = 10  # minibatch size
+n = 50  # minibatch size
 true_theta = 1.5
 
 # Noisy data
@@ -19,7 +19,7 @@ y = true_theta * X + np.random.randn(N)  # Simple linear regression w/ noise
 plt.scatter(X, y)
 plt.show()
 
-eps = 0.5  # step size
+eps = 0.1  # step size
 theta = -60   # initial param
 
 N_iter = 10000
@@ -31,10 +31,14 @@ for t in range(1, N_iter):
     mb_idxs = np.random.randint(0, N, size=n)
     x_mb, y_mb = X[mb_idxs], y[mb_idxs]
 
-    eps_t = eps / t
+    eps_t = eps / t  # Annealed learning rate
     eta = np.random.normal(0, np.sqrt(eps_t))  # Noise
-    grad_loglik = y_mb - theta*x_mb  # Assume lik = N(y | wx, 1)
-    delta = eps_t/2 * np.mean(grad_loglik) + eta
+
+    grad_logprior = theta  # prior = N(w | 0, 1)
+    grad_loglik = np.sum(y_mb - theta*x_mb)  # lik = N(y | wx, 1)
+    grad_logpost = grad_logprior + N/n * grad_loglik  # N/n: scale correction
+
+    delta = eps_t/2 * grad_logpost + eta
     theta = theta + delta
 
     samples[t] = theta
