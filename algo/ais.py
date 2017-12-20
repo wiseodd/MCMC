@@ -64,33 +64,28 @@ plt.show()
 
 
 # Sampling
-n_samples = 1000
+n_samples = 100
 samples = np.zeros(n_samples)
 weights = np.zeros(n_samples)
 
-for n in range(n_samples):
+for t in range(n_samples):
     # Sample initial point from q(x)
     x = p_n.rvs()
-    log_f_j_prev = np.log(f_n(x))
-
     w = 1
 
-    for beta in betas[1:]:
+    for n in range(1, len(betas)):
         # Transition
-        f_j_beta = lambda x: f_j(x, beta)
-        x = T(x, f_j_beta, n_steps=5)
+        x = T(x, lambda x: f_j(x, betas[n]), n_steps=5)
 
-        # Compute weight in log space
-        log_f_j_curr = np.log(f_j(x, beta))
-        w += log_f_j_curr - log_f_j_prev
+        # Compute weight in log space:
+        # w *= f_{n-1}(x_{n-1}) / f_n(x_{n-1})
+        w += np.log(f_j(x, betas[n])) - np.log(f_j(x, betas[n-1]))
 
-        log_f_j_prev = log_f_j_curr
-
-    samples[n] = x
-    weights[n] = np.exp(w)
+    samples[t] = x
+    weights[t] = np.exp(w)
 
 
 # Compute expectation
 a = 1/np.sum(weights) * np.sum(weights * samples)
-# Print: should outputted -5, the mean of p_0
+# Print: should be close to -5, the mean of p_0
 print('Expectation of p_0: {:.4f}'.format(a))
