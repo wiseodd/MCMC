@@ -8,3 +8,4 @@ Collection of Monte Carlo (MC) and Markov Chain Monte Carlo (MCMC) algorithms ap
 3. Metropolis(-Hastings)
 4. Slice Sampling
 5. Stochastic Gradient Langevin Dynamics (SGLD)
+6. Annealed Importance Sampling (AIS)
